@@ -1,0 +1,22 @@
+{
+  "name": "docsgen",
+  "description": "Document generator library.",
+  "version": "0.1.0",
+  "keywords": ["document", "generator", "pdf", "excel", "html"],
+  "bugs": { "url" : "https://github.com/gian788/docsgen/issues"},
+  "license": "MIT",
+  "author": {
+    "name": "Gianluca Pengo",
+    "url": "https://github.com/gian788/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gian788/docsgen"
+  },
+  "dependencies": {
+    "ejs": "*",
+    "juice": "*",
+    "phantom": "*"
+  },
+  "main": "./index.js"
+}
