@@ -3,7 +3,7 @@ var phantom = require('phantom'),
     ejs  	= require('ejs'),
 	 fs 		= require('fs');
 
-var defaultPageSettings = pageSettings: { 
+var defaultPageSettings = { 
    format: 'A4',//"10cm*20cm"
    margin: '1cm',
    orientation: 'portrait',//'landscape',
