@@ -3,6 +3,16 @@ var phantom = require('phantom'),
     ejs  	= require('ejs'),
 	 fs 		= require('fs');
 
+var defaultPageSettings = pageSettings: { 
+   format: 'A4',//"10cm*20cm"
+   margin: '1cm',
+   orientation: 'portrait',//'landscape',
+   //tmpdir: './',
+   //zoom: 1,
+   //rendering_time: 1000,
+   rendering_timeout: 90000,
+};
+
 var session;
 var createPhantomSession = function(callback){
    if(session){
@@ -17,7 +27,8 @@ var createPhantomSession = function(callback){
 
 
 process.on('exit', function(code, signal){
-  session.exit();
+   if(session)
+      session.exit();
 });
 
 var renderPdf = function(session, callback){
@@ -50,7 +61,9 @@ PdfGen.create = function(sourceOptions, destOptions, data, callback){
 
                //DEBUG ONLY
                fs.writeFileSync(sourceOptions.file.split('.')[sourceOptions.file.split('.').length - 2] + '_rendered.html', html);
-            
+               
+               if(!destOptions.pageSettings)
+                  destOptions.pageSettings = defaultPageSettings;
                page.set('paperSize', destOptions.pageSettings, function(){             
                   page.render(destOptions.file, function(){
                      page.close();
