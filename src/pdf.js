@@ -55,12 +55,22 @@ PdfGen.create = function(sourceOptions, destOptions, data, callback){
             utils.readFile(sourceOptions.file, function(err, html){
                if(err)
                   return callback(err);
+               if(!data.length)
+                  html = ejs.render(html, data);
+               else{
+                  var htmlTemplate = html;
+                  html = '';
+                  for(var i in data)
+                     if(i != data.length - 1)
+                        html += '<div style="page-break-after:always;">' + ejs.render(htmlTemplate, data[i]) + '</div>';
+                     else
+                        html += '<div>' + ejs.render(htmlTemplate, data[i]) + '</div>';
+               }
                
-               html = ejs.render(html, data);            
                page.setContent(html);
 
                //DEBUG ONLY
-               fs.writeFileSync(sourceOptions.file.split('.')[sourceOptions.file.split('.').length - 2] + '_rendered.html', html);
+               //fs.writeFileSync(sourceOptions.file.split('.')[sourceOptions.file.split('.').length - 2] + '_rendered.html', html);
                
                if(!destOptions.pageSettings)
                   destOptions.pageSettings = defaultPageSettings;
@@ -71,7 +81,7 @@ PdfGen.create = function(sourceOptions, destOptions, data, callback){
                      return callback(null, destOptions.file);
                   });
                });
-            });      
+            });
          });
       }catch(e){
          try{
@@ -83,7 +93,6 @@ PdfGen.create = function(sourceOptions, destOptions, data, callback){
          return callback('Exception rendering pdf:' + e.toString());
       }
    });
-
 }
 
 

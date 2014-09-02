@@ -15,10 +15,19 @@ pdfGen.create({
 	       	rendering_timeout: 90000,
 	    }
 	},
-	{
-	    name: 'Gianluca',
-	    items: ['item1', 'item2', 'item3']
-	}, function(err, res){
-		console.log(err, res);
+	[
+		{
+		    name: 'Gianluca',
+		    items: ['item1', 'item2', 'item3']
+		},
+		{
+		    name: 'Mattia',
+		    items: ['item1', 'item2', 'item3']
+		}
+	], function(err, fileName){
+		if(err)
+			console.error(err);
+		else
+			console.log(fileName, 'render complete!');
 		process.exit();
 	});
