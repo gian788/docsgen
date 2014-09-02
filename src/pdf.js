@@ -8,7 +8,7 @@ var defaultPageSettings = {
    margin: '1cm',
    orientation: 'portrait',//'landscape',
    //tmpdir: './',
-   //zoom: 1,
+   //zoom: 1, //
    //rendering_time: 1000,
    rendering_timeout: 90000,
 };
