@@ -5,7 +5,7 @@ var phantom = require('phantom'),
 
 //move to config or utils
 ejs.filter.decimal = function(num) {
-   return parseFloat(num).toFixed(2);(
+   return parseFloat(num).toFixed(2);
 };
   
 ejs.filter.date = function(obj) {
