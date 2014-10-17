@@ -3,6 +3,16 @@ var phantom = require('phantom'),
     ejs  	= require('ejs'),
 	 fs 		= require('fs');
 
+//move to config or utils
+ejs.filter.decimal = function(num) {
+   return parseFloat(num).toFixed(2);(
+};
+  
+ejs.filter.date = function(obj) {
+   var date = new Date(obj);
+   return date.getDate() + '/' + date.getMonth() + '/' + date.getFullYear();
+};
+
 var defaultPageSettings = { 
    format: 'A4',//"10cm*20cm"
    margin: '1cm',
