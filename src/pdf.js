@@ -4,11 +4,11 @@ var phantom = require('phantom'),
 	 fs 		= require('fs');
 
 //move to config or utils
-ejs.filter.decimal = function(num) {
+ejs.filters.decimal = function(num) {
    return parseFloat(num).toFixed(2);
 };
   
-ejs.filter.date = function(obj) {
+ejs.filters.date = function(obj) {
    var date = new Date(obj);
    return date.getDate() + '/' + date.getMonth() + '/' + date.getFullYear();
 };
