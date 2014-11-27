@@ -55,10 +55,16 @@ var writeStream = function(data, streamOut, options){
 	stringifier = stringify();
 	stringifier.pipe(streamOut);
 
-	if(options.template && typeof(options.template) != 'object')
-		console.error('Error: Docsgen.csv - Bad template argument');
-
-	if(options.template && typeof(options.template) == 'object'){
+	if (options.template && Object.prototype.toString.call(options.template) == '[object Array]'){
+		if (typeof(options.transformer) != 'function')
+			return console.error('Error: Docsgen.csv - Bad transformer argument');
+		
+		stringifier.write(options.template);
+		
+		for(var i in data)
+			stringifier.write(options.transformer(data[i]));
+		
+	} else if(options.template && typeof(options.template) == 'object'){
 		var temp = [];
 		for(var t in options.template)
 			temp.push(options.template[t]);
@@ -70,7 +76,7 @@ var writeStream = function(data, streamOut, options){
 				temp.push(data[i][t]);
 			stringifier.write(temp);			
 		}
-	}else {
+	} else {
 		for(var i in data)
 			stringifier.write(data[i]);
 	}
