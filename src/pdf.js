@@ -79,6 +79,14 @@ PdfGen.create = function(sourceOptions, destOptions, data, callback){
                         html += '<div>' + ejs.render(htmlTemplate, data[i]) + '</div>';
                }
                
+               //@TODO handle resource loading!!
+               page.onResourceRequested = function(requestData, networkRequest) {
+                   console.log('Request (#' + requestData.id + '): ' + JSON.stringify(requestData));
+               };
+               page.onResourceReceived = function(response) {
+                   console.log('Response (#' + response.id + ', stage "' + response.stage + '"): ' + JSON.stringify(response));
+               };
+
                page.setContent(html);
 
                //DEBUG ONLY
