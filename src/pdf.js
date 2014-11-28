@@ -37,15 +37,11 @@ var createPhantomSession = function(callback){
    }
 };
 
-
 process.on('exit', function(code, signal){
    if(session)
       session.exit();
 });
 
-var renderPdf = function(session, callback){
-   
-};
 
 var PdfGen = module.exports;
 
@@ -65,11 +61,14 @@ PdfGen.create = function(sourceOptions, destOptions, data, callback){
             page = _page;
 
             utils.readFile(sourceOptions.file, function(err, html){
-               if(err)
-                  return callback(err);
-               if(!data.length)
+               if(err) return callback(err);
+               fn(html);
+            });
+
+            var fn = function(html){
+               if(!data.length){
                   html = ejs.render(html, data);
-               else{
+               }else{
                   var htmlTemplate = html;
                   html = '';
                   for(var i in data)
@@ -101,7 +100,7 @@ PdfGen.create = function(sourceOptions, destOptions, data, callback){
                      return callback(null, destOptions.file);
                   });
                });
-            });
+            }
          });
       }catch(e){
          try{

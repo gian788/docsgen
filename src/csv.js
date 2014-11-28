@@ -3,7 +3,8 @@ var stringify = require('csv-stringify'),
 	fs = require('fs');
 
 
-/*parse.options = {
+/*
+parse.options = {
 	delimiter: ',',//Set the field delimiter. One character only, defaults to comma.
 	rowDelimiter: '\n',//String used to delimit record rows or a special value; special values are 'auto', 'unix', 'mac', 'windows', 'unicode'; defaults to 'auto' (discovered in source or 'unix' if no source is specified).
 	quote: '"',//Optionnal character surrounding a field, one character only, defaults to double quotes.
@@ -30,61 +31,133 @@ strigify.options = {
 	quotedEmpty: ,//Boolean, no default, quote empty fields? If specified, overrides quotedString for empty strings.
 	quotedString: false,//Boolean, default to false, quote all fields of type string even if not required.
 	rowDelimiter: 'auto',//String used to delimit record rows or a special value; special values are 'auto', 'unix', 'mac', 'windows', 'unicode'; defaults to 'auto' (discovered in source or 'unix' if no source is specified).
+
+	template: ,//Object or Array containing header
+	transformer: ,//Function that transform each object input data row to an array
 }*/
+
+
+var CSVGen = module.exports;
+
+//Read
 /*
-var readStreamToStream = function(streamIn, streamOut, options){
+CSVGen.readStreamToStream = function(streamIn, streamOut, options){
 	var parser = parse(options);
 	streamIn.pipe(parser).pipe(streamOut);
 }*/
 
-var readStream = function(stream, options, callback){
+/**
+ * Read a csv from a stream and return an array of objects
+ @param stream    ReadableStream   	source data stream
+ @param options   Object   			parse options
+ @param callback  Object   			callback function (err, res)
+ */
+CSVGen.readStream = function(stream, options, callback){
 	stream.pipe(parse(options, callback));
 }
 
-var readFile = function(filePath, options, callback){
+/**
+ * Read a csv from a file and return an array of objects
+ @param filePath  String   source file path
+ @param options   Object   parse options
+ @param callback  Object   callback function (err, res)
+ */
+CSVGen.readFile = function(filePath, options, callback){
 	readStream(fs.createReadStream(filePath), options, callback);
 }
 
-
-var writeStreamToStream = function(streamIn, streamOut, options, callback){
+//Write
+/**
+ * Create a csv and send it to the stream
+ @param data   		ReadableStream	input data stream
+ @param streamOut   WritableStream  destination file path
+ @param options     Object   		stringify options
+ */
+CSVGen.writeStreamToStream = function(streamIn, streamOut, options){
 	stringifier = stringify(options);
 	streamIn.pipe(stringifier).pipe(streamOut);
 }
 
-var writeStream = function(data, streamOut, options){
+/**
+ * Create a csv and send it to the stream
+ @param data   		Object  		input data
+ @param streamOut   WritableStream  destination file path
+ @param options     Object   		stringify options
+ */
+CSVGen.writeStream = function(data, streamOut, options){
 	stringifier = stringify();
 	stringifier.pipe(streamOut);
 
-	if (options.template && Object.prototype.toString.call(options.template) == '[object Array]'){
-		if (typeof(options.transformer) != 'function')
-			return console.error('Error: Docsgen.csv - Bad transformer argument');
-		
-		stringifier.write(options.template);
-		
-		for(var i in data)
-			stringifier.write(options.transformer(data[i]));
-		
-	} else if(options.template && typeof(options.template) == 'object'){
-		var temp = [];
-		for(var t in options.template)
-			temp.push(options.template[t]);
-		stringifier.write(temp);
-
-		for(var i in data){
+	if (options.template && typeof(options.template) == 'object'){
+		if (Object.prototype.toString.call(options.template) != '[object Array]'){			
 			var temp = [];
 			for(var t in options.template)
-				temp.push(data[i][t]);
-			stringifier.write(temp);			
-		}
+				temp.push(options.template[t]);
+			stringifier.write(temp);
+
+			for(var i in data){
+				var temp = [];
+				for(var t in options.template)
+					temp.push(data[i][t]);
+				stringifier.write(temp);			
+			}
+
+			stringifier.end();
+			return;
+		} else if {
+			stringifier.write(options.template);
+		} 
+	} 
+
+	if (options.transformer && typeof(options.transformer) != 'function'){		
+		for(var i in data)
+			stringifier.write(options.transformer(data[i]));		
 	} else {
 		for(var i in data)
 			stringifier.write(data[i]);
 	}
-	
-	stringifier.end();	
+
+	stringifier.end();
+
+	/*
+		if (options.template && Object.prototype.toString.call(options.template) == '[object Array]'){
+			if (typeof(options.transformer) != 'function')
+				return console.error('Error: Docsgen.csv - Bad transformer argument');
+			
+			stringifier.write(options.template);
+			
+			for(var i in data)
+				stringifier.write(options.transformer(data[i]));
+			
+		} else if(options.template && typeof(options.template) == 'object'){
+			var temp = [];
+			for(var t in options.template)
+				temp.push(options.template[t]);
+			stringifier.write(temp);
+
+			for(var i in data){
+				var temp = [];
+				for(var t in options.template)
+					temp.push(data[i][t]);
+				stringifier.write(temp);			
+			}
+		} else {
+			for(var i in data)
+				stringifier.write(data[i]);
+		}
+		
+		stringifier.end();
+	*/	
 }
 
-var writeFile = function(data, filePath, options, callback){
+/**
+ * Create a csv and save it to file
+ @param data   		Object   input data
+ @param filePath    String   destination file path
+ @param options     Object   stringify options
+ @param callback    Object   callback function (err, res)
+ */
+CSVGen.writeFile = function(data, filePath, options, callback){
 	var ws = fs.createWriteStream(filePath);
 	ws.on('finish', function(){
 		ws.close();
