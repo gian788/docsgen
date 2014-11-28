@@ -1,7 +1,7 @@
 var phantom = require('phantom'),
-	 utils   = require('./utils'),
-    ejs  	= require('ejs'),
-	 fs 		= require('fs');
+    utils   = require('./utils'),
+    ejs     = require('ejs'),
+    fs      = require('fs');
 
 //move to config or utils
 ejs.filters.decimal = function(num) {
@@ -55,17 +55,11 @@ PdfGen.create = function(sourceOptions, destOptions, data, callback){
 
    createPhantomSession(function(ph){
       var page;
-
       try{
          ph.createPage(function(_page){
             page = _page;
 
-            utils.readFile(sourceOptions.file, function(err, html){
-               if(err) return callback(err);
-               fn(html);
-            });
-
-            var fn = function(html){
+            var render = function(html){
                if(!data.length){
                   html = ejs.render(html, data);
                }else{
@@ -77,7 +71,7 @@ PdfGen.create = function(sourceOptions, destOptions, data, callback){
                      else
                         html += '<div>' + ejs.render(htmlTemplate, data[i]) + '</div>';
                }
-               
+                           
                //@TODO handle resource loading!!
                page.onResourceRequested = function(requestData, networkRequest) {
                    console.log('Request (#' + requestData.id + '): ' + JSON.stringify(requestData));
@@ -88,19 +82,26 @@ PdfGen.create = function(sourceOptions, destOptions, data, callback){
 
                page.setContent(html);
 
-               //DEBUG ONLY
-               //fs.writeFileSync(sourceOptions.file.split('.')[sourceOptions.file.split('.').length - 2] + '_rendered.html', html);
-               
                if(!destOptions.pageSettings)
                   destOptions.pageSettings = defaultPageSettings;
                page.set('paperSize', destOptions.pageSettings, function(){             
-                  page.render(destOptions.file, function(){
+                  page.render(destOptions.file, {quality: '100'}, function(){
                      page.close();
                      page = null;
                      return callback(null, destOptions.file);
                   });
                });
             }
+
+            if(sourceOptions.file)
+               utils.readFile(sourceOptions.file, function(err, html){
+                  if(err) return callback(err);
+                  render(html);
+               });
+            else if(sourceOptions.html)
+               render(sourceOptions.html);
+            else
+               return callback({message: 'Missing template'});           
          });
       }catch(e){
          try{

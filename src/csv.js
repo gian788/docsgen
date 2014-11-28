@@ -109,7 +109,7 @@ CSVGen.writeStream = function(data, streamOut, options){
 		} 
 	} 
 
-	if (options.transformer && typeof(options.transformer) != 'function'){		
+	if (options.transformer && typeof(options.transformer) == 'function'){		
 		for(var i in data)
 			stringifier.write(options.transformer(data[i]));		
 	} else {
