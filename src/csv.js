@@ -171,11 +171,4 @@ CSVGen.writeFile = function(data, filePath, options, callback){
 	writeStream(data, ws, options, callback);
 }
 
-//module.exports.readStreamToStream = readStreamToStream;
-module.exports.readStream = readStream;
-module.exports.readFile = readFile;
-
-module.exports.writeStreamToStream = writeStreamToStream;
-module.exports.writeStream = writeStream;
-module.exports.writeFile = writeFile;
 
