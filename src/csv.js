@@ -104,7 +104,7 @@ CSVGen.writeStream = function(data, streamOut, options){
 
 			stringifier.end();
 			return;
-		} else if {
+		} else {
 			stringifier.write(options.template);
 		} 
 	} 
