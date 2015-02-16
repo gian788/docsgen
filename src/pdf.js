@@ -12,7 +12,7 @@ ejs.filters.decimal = function(num) {
   
 ejs.filters.date = function(obj) {
    var date = new Date(obj);
-   return date.getDate() + '/' + date.getMonth() + '/' + date.getFullYear();
+   return date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear();
 };
 
 var defaultPageSettings = { 
