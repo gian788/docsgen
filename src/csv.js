@@ -63,7 +63,7 @@ CSVGen.readStream = function(stream, options, callback){
  @param callback  Object   callback function (err, res)
  */
 CSVGen.readFile = function(filePath, options, callback){
-	readStream(fs.createReadStream(filePath), options, callback);
+	CSVGen.readStream(fs.createReadStream(filePath), options, callback);
 }
 
 //Write
