@@ -1,7 +1,7 @@
 {
   "name": "docsgen",
   "description": "Document generator library.",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "keywords": [
     "document",
     "generator",
