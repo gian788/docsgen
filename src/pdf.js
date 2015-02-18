@@ -82,6 +82,9 @@ PdfGen.create = function(sourceOptions, destOptions, data, callback){
 
                page.setContent(html);
 
+               if(typeof(destOptions) == 'function')
+                  destOptions = destOptions(ph);
+
                if(!destOptions.pageSettings)
                   destOptions.pageSettings = defaultPageSettings;
                page.set('paperSize', destOptions.pageSettings, function(){             

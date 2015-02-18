@@ -22,5 +22,5 @@ var html = readFile(htmlFile),
 html = juice(html, stylesheet);
 
 fs.writeFileSync(destFile, html);
-console.log('Html and css files merged!');
+console.log('Files merged!');
 
