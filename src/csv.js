@@ -138,7 +138,7 @@ CSVGen.writeFile = function(data, filePath, options, callback){
 		callback(err);
 	});
 
-	writeStream(data, ws, options, callback);
+	CSVGen.writeStream(data, ws, options, callback);
 }
 
 
