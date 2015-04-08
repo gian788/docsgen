@@ -60,9 +60,11 @@ PdfGen.create = function(sourceOptions, destOptions, data, callback){
             page = _page;
 
             var render = function(html){
-               if(!data.length){
+               /** Render html **/
+               if(!data.length) {
                   html = ejs.render(html, data);
-               }else{
+               } else {
+                  //handle multi array of data (one "render" per array element)
                   var htmlTemplate = html;
                   html = '';
                   for(var i in data)
@@ -70,28 +72,59 @@ PdfGen.create = function(sourceOptions, destOptions, data, callback){
                         html += '<div style="page-break-after:always;">' + ejs.render(htmlTemplate, data[i]) + '</div>';
                      else
                         html += '<div>' + ejs.render(htmlTemplate, data[i]) + '</div>';
-               }
-                           
-               //@TODO handle resource loading!!
-               page.onResourceRequested = function(requestData, networkRequest) {
-                   console.log('Request (#' + requestData.id + '): ' + JSON.stringify(requestData));
-               };
-               page.onResourceReceived = function(response) {
-                   console.log('Response (#' + response.id + ', stage "' + response.stage + '"): ' + JSON.stringify(response));
-               };
-
-               page.setContent(html);
+               }                           
+               
 
                if(typeof(destOptions) == 'function')
                   destOptions = destOptions(ph);
 
                if(!destOptions.pageSettings)
                   destOptions.pageSettings = defaultPageSettings;
-               page.set('paperSize', destOptions.pageSettings, function(){             
-                  page.render(destOptions.file, {quality: '100'}, function(){
+
+               page.set('settings.localToRemoteUrlAccessEnabled', true);
+               page.set('settings.loadImages', true);
+               page.set('settings.webSecurityEnabled', false);               
+                            
+
+               var reqCount = 0,
+                   resCount = 0;
+
+               var render = function(){
+                  //console.log('render');
+                  page.render(destOptions.file, {quality: '100'}, function(){                     
                      page.close();
                      page = null;
                      return callback(null, destOptions.file);
+                  });
+               }
+
+               page.set('onLoadFinished', function() {
+                  //console.log('onLoadFinished')
+               });
+
+               page.set('onResourceRequested', function(success) {
+                  reqCount++;
+                  //console.log('req', reqCount, success.url)
+               });
+
+               page.set('onResourceReceived', function(success) {
+                  //for every resource it receive two response      
+                  if(++resCount == reqCount * 2)            
+                     render();
+                  //console.log('res', resCount, success.url)
+               });
+
+               page.set('paperSize', destOptions.pageSettings, function(){
+                  page.open('about:blank', function(err) {
+
+                     page.setContent(html);
+
+                     page.evaluate(function(){
+                        }, function(){
+                           //console.log('created');
+                           if(reqCount == 0)
+                              render();
+                     });
                   });
                });
             }
