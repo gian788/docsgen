@@ -85,7 +85,7 @@ CSVGen.writeStreamToStream = function(streamIn, streamOut, options){
  @param options     Object   		stringify options
  */
 CSVGen.writeStream = function(data, streamOut, options){
-	stringifier = stringify();
+	stringifier = stringify(options);
 	stringifier.pipe(streamOut);
 
 	if (options.template && typeof(options.template) == 'object'){
